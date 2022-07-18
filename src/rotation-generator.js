@@ -62,62 +62,46 @@ function combinations(k, arr, prefix = []) {
 	);
 }
 
-function arrayUnion(a, b) {
-	const list = a.reduce((s, e) => s.concat(e), []);
-	console.log(a, b, list);
-	return b.some((e) => list.includes(e));
-}
-
 function generatePermutations(nTeams, nCourts, nGames) {
 	const matches = combinations(2, nTeams);
 	const rounds = [];
 
-	console.log(matches);
-
-	const teamCounts = {};
-	[...Array(nTeams).keys()].forEach((n) => (teamCounts[n] = 0));
-
-	console.log(teamCounts);
-
-	do {
-		let round = [];
-		// sort the team counts.
-
-		// select the smallest team.
-		// find the first game that doesn't repeat teams this round.
-		// add it to the roster.
-	} while (rounds.length < nCourts * nGames);
-
-	return rounds;
-
-	while (rounds.length < nGames) {
+	while (matches.length > 2 && rounds.length < nGames) {
 		const round = [];
-		while (round.length < nCourts) {
-			let game = matches[0];
-			while (arrayUnion(round, game)) {
-				matches.push(matches.shift());
-				game = matches[0];
+		while (round.length < nCourts && matches.length > 2) {
+			let match = matches.shift();
+
+			if (match.every((team) => !round.flat().includes(team))) {
+				round.push(match);
+				continue;
 			}
-			round.push(game);
-			matches.shift();
+
+			matches.push(match);
 		}
 		rounds.push(round);
 	}
+
 	return rounds;
 }
 
-const a = [[1], [2], [3], [4]];
-const b = [3, 4];
-const c = [
-	[1, 2],
-	[3, 4],
-];
-const d = [5, 6, 7];
-
+function countRounds(arr) {
+	return arr
+		.flat()
+		.flat()
+		.reduce((counts, n) => {
+			if (n in counts) {
+				counts[n]++;
+			} else {
+				counts[n] = 0;
+			}
+			return counts;
+		}, {});
+}
 /* 
 console.log(arrayUnion(a, b));
 console.log(arrayUnion(c, b));
 console.log(arrayUnion(c, d));
 */
-
-console.log(generatePermutations(6, 2, 4));
+let rounds = generatePermutations(6, 2, 4);
+console.log(rounds);
+console.log(countRounds(rounds));
